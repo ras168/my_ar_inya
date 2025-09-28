@@ -473,17 +473,15 @@
             });
           }
         });
-        // タップでスタンプ獲得
-        document.querySelectorAll(".clickable").forEach((img) => {
-          img.addEventListener("click", (e) => {
+        // gesture-swipeイベントでスタンプ獲得
+        document.querySelectorAll(".swipeable").forEach((img) => {
+          img.addEventListener("gesture-swipe", function (e) {
             const markerEl = img.parentElement;
             if (markerEl && markerEl.getAttribute("url")) {
               markStamp(markerEl.getAttribute("url"));
             }
           });
         });
-        // スワイプ検知追加
-        addSwipeListener();
       });
 
       // スワイプ検知（タッチイベント）
