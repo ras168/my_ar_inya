@@ -476,6 +476,7 @@
         // gesture-swipeイベントでスタンプ獲得
         document.querySelectorAll(".swipeable").forEach((img) => {
           img.addEventListener("gesture-swipe", function (e) {
+            console.log("gesture-swipe fired!", e, img);
             const markerEl = img.parentElement;
             if (markerEl && markerEl.getAttribute("url")) {
               markStamp(markerEl.getAttribute("url"));
