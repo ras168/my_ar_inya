@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>ARスタンプラリー</title>
+    <link href="index.css" rel="stylesheet" />
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", "Meiryo", sans-serif;
+        background: #f7f7fa;
+      }
+      .container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 24px 12px 80px 12px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-top: 24px;
+      }
+      h1 {
+        font-size: 1.5em;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+      #stamp-list {
+        display: flex;
+        justify-content: space-between;
+        margin: 24px 0 8px 0;
+      }
+      .stamp {
+        width: 56px;
+        height: 56px;
+        border-radius: 8px;
+        background: #eee;
+        border: 2px solid #ccc;
+        object-fit: contain;
+        opacity: 0.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        color: #aaa;
+      }
+      .stamp.got {
+        border-color: #4caf50;
+        opacity: 1;
+        background: #fff;
+        color: #333;
+      }
+      #point {
+        text-align: center;
+        font-size: 1.1em;
+        margin-bottom: 16px;
+        color: #1976d2;
+      }
+      .btns {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .btn {
+        flex: 1;
+        margin: 0 6px;
+        padding: 10px 0;
+        font-size: 1em;
+        border-radius: 8px;
+        border: none;
+        background: #e0e7ff;
+        color: #333;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+        transition: background 0.2s;
+      }
+      .btn:active {
+        background: #b6c6f6;
+      }
+      .ar-btn {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        background: #1976d2;
+        color: #fff;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 0;
+        padding: 18px 0;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+      }
+      .ar-btn:active {
+        background: #1565c0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ARスタンプラリー</h1>
+      <div id="point">合計ポイント: <span id="point-value">0</span> pt</div>
+      <div id="stamp-list">
+        <div class="stamp" id="stamp-0">?</div>
+        <div class="stamp" id="stamp-1">?</div>
+        <div class="stamp" id="stamp-2">?</div>
+        <div class="stamp" id="stamp-3">?</div>
+        <div class="stamp" id="stamp-4">?</div>
+      </div>
+      <div class="btns">
+        <button class="btn" onclick="showHowTo()">あそびかた</button>
+        <button class="btn" onclick="showStampPlaces()">
+          スタンプ設置場所
+        </button>
+      </div>
+    </div>
+    <button class="ar-btn" onclick="location.href='ar.html'">
+      ARカメラを起動
+    </button>
+    <script>
+      // スタンプデータ例（仮）
+      const STAMPS = [
+        { name: "A-1", img: "assets/content/content1-AR-Inya.png", pt: 1 },
+        { name: "A-2", img: "assets/content/content2-AR-Yatai.png", pt: 2 },
+        { name: "B-1", img: "assets/content/content3-AR-Program.png", pt: 1 },
+        { name: "B-2", img: "assets/content/content4-AR-Ennichi.png", pt: 2 },
+        { name: "C-1", img: "assets/content/content5-AR-Escape.png", pt: 1 },
+        { name: "C-2", img: "assets/content/content6-AR-Survival.png", pt: 2 },
+        { name: "D-1", img: "assets/content/content7-AR-Mystery.png", pt: 1 },
+        { name: "D-2", img: "assets/content/content8-AR-Lifegame.png", pt: 2 },
+        { name: "E-1", img: "assets/content/content9-AR-Horror.png", pt: 1 },
+        { name: "E-2", img: "assets/content/content10-AR-Destiny.png", pt: 2 },
+      ];
+      // 5箇所分のスタンプ（1pt/2pt）
+      function getStampStatus() {
+        const data = localStorage.getItem("ar_stamps_v2");
+        if (!data) return [null, null, null, null, null];
+        try {
+          return JSON.parse(data);
+        } catch {
+          return [null, null, null, null, null];
+        }
+      }
+      function setStampStatus(arr) {
+        localStorage.setItem("ar_stamps_v2", JSON.stringify(arr));
+      }
+      function updateStampUI() {
+        const status = getStampStatus();
+        let total = 0;
+        for (let i = 0; i < 5; i++) {
+          const el = document.getElementById(`stamp-${i}`);
+          if (status[i]) {
+            el.classList.add("got");
+            el.innerHTML = `<img src="${status[i].img}" style="width:40px;height:40px;">`;
+            total += status[i].pt;
+          } else {
+            el.classList.remove("got");
+            el.innerHTML = "?";
+          }
+        }
+        document.getElementById("point-value").textContent = total;
+      }
+      window.addEventListener("DOMContentLoaded", updateStampUI);
+      // ダミー: スタンプ獲得テスト用
+      window.testStamp = function (idx, pt) {
+        const status = getStampStatus();
+        status[idx] = STAMPS.find(
+          (s) => s.pt === pt && s.name.startsWith(String.fromCharCode(65 + idx))
+        );
+        setStampStatus(status);
+        updateStampUI();
+      };
+      // あそびかた・設置場所ボタン
+      function showHowTo() {
+        alert(
+          "ARカメラでマーカーを読み取り、画像をスワイプしてスタンプを集めよう！\n2ポイントのスタンプは1ポイントのスタンプを上書きします。\n全て集めてコンプリートを目指そう！"
+        );
+      }
+      function showStampPlaces() {
+        alert(
+          "スタンプ設置場所は会場マップをご覧ください。\n各場所に2種類のスタンプがあります。"
+        );
+      }
+    </script>
+  </body>
+</html>

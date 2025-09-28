@@ -1,0 +1,30 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+}
+.container {
+  text-align: center;
+  background: #fff;
+  padding: 2em 3em;
+  border-radius: 1em;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+.start {
+  margin-top: 2em;
+  padding: 1em 2em;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 0.5em;
+  background: #181f7f;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.start:hover {
+  background: #181f3f;
+}
