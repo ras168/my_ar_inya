@@ -472,6 +472,15 @@
             });
           }
         });
+        // タップでスタンプ獲得
+        document.querySelectorAll(".clickable").forEach((img) => {
+          img.addEventListener("click", (e) => {
+            const markerEl = img.parentElement;
+            if (markerEl && markerEl.getAttribute("url")) {
+              markStamp(markerEl.getAttribute("url"));
+            }
+          });
+        });
         // スワイプ検知追加
         addSwipeListener();
       });
