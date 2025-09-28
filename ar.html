@@ -472,7 +472,31 @@
             });
           }
         });
+        // スワイプ検知追加
+        addSwipeListener();
       });
+
+      // スワイプ検知（タッチイベント）
+      function addSwipeListener() {
+        let touchStartX = null;
+        document.querySelectorAll(".swipeable").forEach((img) => {
+          img.addEventListener("touchstart", (e) => {
+            touchStartX = e.touches[0].clientX;
+          });
+          img.addEventListener("touchend", (e) => {
+            if (touchStartX === null) return;
+            const touchEndX = e.changedTouches[0].clientX;
+            if (Math.abs(touchEndX - touchStartX) > 50) {
+              // スワイプ判定
+              const markerEl = img.parentElement;
+              if (markerEl && markerEl.getAttribute("url")) {
+                markStamp(markerEl.getAttribute("url"));
+              }
+            }
+            touchStartX = null;
+          });
+        });
+      }
     </script>
   </body>
 </html>
