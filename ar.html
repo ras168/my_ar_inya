@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/gesture-handler.js"></script>
+    <!-- gesture-handlerは回転機能が競合するため、読み込まないことを推奨します -->
+    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script> -->
+    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/gesture-handler.js"></script> -->
     <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <link href="ar.css" rel="stylesheet" />
     <style>
@@ -48,13 +49,11 @@
       dataLayer.push(arguments);
     }
     gtag("js", new Date());
-
     gtag("config", "G-EZXC8JB271");
   </script>
 
   <script>
     MicroModal.init();
-
     function closeModal() {
       document.getElementById("modal-1").ariaHidden = "true";
       document.getElementById("modal-1").className = "modal micromodal-slide";
@@ -89,13 +88,14 @@
           <div class="modal-content" id="modal-1-content">
             安全のため周囲の物や人から十分な距離を確保して、お楽しみください。<br />
             <br />ARコンテンツの表示に乱れがある際はページ再読み込みのほか、<br />
-            タッチ操作で移動、回転、拡大縮小が出来ますのでお試し下さい。<br />
-            <br />もし正常に動作しない際はお近くのスタッフへお問い合わせください。
+            もし正常に動作しない際はお近くのスタッフへお問い合わせください。
           </div>
           <button id="closeButton" onclick="closeModal()">閉じる</button>
         </div>
       </div>
     </div>
+
+    <!-- ▼▼▼ HTMLの修正箇所 ▼▼▼ -->
     <a-scene
       device-orientation-permission-ui="enabled:false"
       vr-mode-ui="enabled: false;"
@@ -104,240 +104,198 @@
       id="scene"
       embedded
       gesture-detector
-      cursor="rayOrigin: mouse"
     >
+      <!-- ▲▲▲ cursor属性を削除 ▲▲▲ -->
+
+      <!-- ▼▼▼ マーカーからcursorとraycasterを削除 ▼▼▼ -->
       <a-marker
-        id="animated-marker"
+        id="marker1"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker1-AR-Inya.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content1-AR-Inya.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker2"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker2-AR-Yatai.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content2-AR-Yatai.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker3"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker3-AR-Program.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content3-AR-Program.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker4"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker4-AR-Ennichi.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content4-AR-Ennichi.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker5"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker5-AR-Escape.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content5-AR-Escape.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker6"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker6-AR-Survival.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content6-AR-Survival.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker7"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker7-AR-Mystery.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content7-AR-Mystery.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker8"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker8-AR-Lifegame.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content8-AR-Lifegame.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker9"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker9-AR-Horror.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content9-AR-Horror.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker10"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker10-AR-Destiny.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content10-AR-Destiny.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker11"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker11-AR-Sports.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content11-AR-Sports.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
       <a-marker
-        id="animated-marker"
+        id="marker12"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker12-AR-Stage.patt"
-        raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-image
           src="assets/content/content12-AR-Stage.png"
           scale="3.0 3.0 3.0"
           class="clickable swipeable"
           rotation="-90 0 0"
-          gesture-handler
         ></a-image>
       </a-marker>
 
-      <a-entity camera></a-entity>
+      <!-- ▼▼▼ ここにcursorとraycasterを正しく設定 ▼▼▼ -->
+      <a-entity
+        camera
+        cursor="rayOrigin: mouse; fuse: false;"
+        raycaster="objects: .clickable;"
+      ></a-entity>
     </a-scene>
-    <!-- ar.html の末尾にある <script>タグの中身を以下に差し替える -->
-    <!-- ar.html の末尾にある <script>タグの中身を以下に差し替える -->
+
     <script>
       // --- スタンプのマスターデータ定義 ---
       const STAMP_MARKERS = [
