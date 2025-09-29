@@ -447,12 +447,8 @@
 
       // --- スタンプ獲得処理 ---
       function markStamp(markerId) {
-        console.log(`[markStamp] 処理開始: ${markerId}`);
         const newStamp = STAMP_MARKERS.find((s) => s.id === markerId);
-        if (!newStamp) {
-          console.warn(`[markStamp] 未定義のマーカー: ${markerId}`);
-          return;
-        }
+        if (!newStamp) return;
         const status = getStampStatus();
         const groupIndex = newStamp.group;
         const existingStamp = status[groupIndex];
@@ -464,58 +460,49 @@
           };
           setStampStatus(status);
           showStampGetModal(newStamp);
-        } else {
-          console.log("[markStamp] より高ポイントのスタンプを既に獲得済み");
         }
       }
 
-      // --- スワイプ検出機能 (A-Frameネイティブ版) ---
+      // --- スワイプ検出機能 (A-Frameネイティブ版 - 最終修正) ---
       function addAFrameSwipeListener() {
-        console.log("[Listener] A-Frameスワイプ検出リスナーを設定します。");
         const swipeableElements = document.querySelectorAll(".swipeable");
         let touchStartX = null;
 
         swipeableElements.forEach((el) => {
           // mousedown: タッチ開始
           el.addEventListener("mousedown", function (e) {
-            // e.detail.browserEventで元のブラウザイベントにアクセスできる
-            if (e.detail.browserEvent.clientX) {
-              touchStartX = e.detail.browserEvent.clientX;
-              console.log(`[mousedown] イベント発生！ 開始X: ${touchStartX}`);
-            }
+            // 元のイベントを e.detail.sourceEvent から取得
+            const sourceEvent = e.detail.sourceEvent;
+            if (!sourceEvent) return;
+
+            // PC(MouseEvent)とスマホ(TouchEvent)で場合分け
+            touchStartX =
+              sourceEvent.clientX ||
+              (sourceEvent.touches && sourceEvent.touches[0].clientX);
           });
 
           // mouseup: タッチ終了
           el.addEventListener("mouseup", function (e) {
             if (touchStartX === null) return;
 
-            if (e.detail.browserEvent.changedTouches) {
-              // スマホの場合
-              const touchEndX = e.detail.browserEvent.changedTouches[0].clientX;
-              console.log(`[mouseup] イベント発生！ 終了X: ${touchEndX}`);
-              if (Math.abs(touchEndX - touchStartX) > 50) {
-                console.log("スワイプを検出しました！");
-                const markerEl = el.parentElement;
-                const markerUrl = markerEl.getAttribute("url");
-                if (markerUrl) {
-                  const markerId = markerUrl.split("/").pop();
-                  markStamp(markerId);
-                }
-              }
-            }
+            const sourceEvent = e.detail.sourceEvent;
+            if (!sourceEvent) return;
 
-            // 念のため、PCでのデバッグ用に mouseup イベントの座標も見る
-            else if (e.detail.browserEvent.clientX) {
-              const touchEndX = e.detail.browserEvent.clientX;
-              console.log(`[mouseup] イベント発生！ 終了X: ${touchEndX}`);
-              if (Math.abs(touchEndX - touchStartX) > 50) {
-                console.log("スワイプを検出しました！(PC)");
-                const markerEl = el.parentElement;
-                const markerUrl = markerEl.getAttribute("url");
-                if (markerUrl) {
-                  const markerId = markerUrl.split("/").pop();
-                  markStamp(markerId);
-                }
+            // スマホ(TouchEvent)とPC(MouseEvent)で場合分け
+            const touchEndX =
+              (sourceEvent.changedTouches &&
+                sourceEvent.changedTouches[0].clientX) ||
+              sourceEvent.clientX;
+
+            if (
+              touchEndX !== undefined &&
+              Math.abs(touchEndX - touchStartX) > 50
+            ) {
+              const markerEl = el.parentElement;
+              const markerUrl = markerEl.getAttribute("url");
+              if (markerUrl) {
+                const markerId = markerUrl.split("/").pop();
+                markStamp(markerId);
               }
             }
 
