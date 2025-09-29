@@ -117,42 +117,39 @@
     <button class="ar-btn" onclick="location.href='ar.html'">
       ARカメラを起動
     </button>
+    <!-- index.html の末尾にある <script>タグの中身を以下に差し替える -->
     <script>
-      // スタンプデータ例（仮）
-      const STAMPS = [
-        { name: "A-1", img: "assets/content/content1-AR-Inya.png", pt: 1 },
-        { name: "A-2", img: "assets/content/content2-AR-Yatai.png", pt: 2 },
-        { name: "B-1", img: "assets/content/content3-AR-Program.png", pt: 1 },
-        { name: "B-2", img: "assets/content/content4-AR-Ennichi.png", pt: 2 },
-        { name: "C-1", img: "assets/content/content5-AR-Escape.png", pt: 1 },
-        { name: "C-2", img: "assets/content/content6-AR-Survival.png", pt: 2 },
-        { name: "D-1", img: "assets/content/content7-AR-Mystery.png", pt: 1 },
-        { name: "D-2", img: "assets/content/content8-AR-Lifegame.png", pt: 2 },
-        { name: "E-1", img: "assets/content/content9-AR-Horror.png", pt: 1 },
-        { name: "E-2", img: "assets/content/content10-AR-Destiny.png", pt: 2 },
-      ];
-      // 5箇所分のスタンプ（1pt/2pt）
+      // スタンプのマスターデータはar.htmlに集約したため、ここでは不要
+      // const STAMPS = [...];
+
       function getStampStatus() {
         const data = localStorage.getItem("ar_stamps_v2");
+        // データがない場合は、5つの空スロットを持つ配列を生成
         if (!data) return [null, null, null, null, null];
         try {
-          return JSON.parse(data);
+          const parsedData = JSON.parse(data);
+          return Array.isArray(parsedData)
+            ? parsedData
+            : [null, null, null, null, null];
         } catch {
           return [null, null, null, null, null];
         }
       }
-      function setStampStatus(arr) {
-        localStorage.setItem("ar_stamps_v2", JSON.stringify(arr));
-      }
+
+      // localStorageへの書き込みはar.htmlが行うため、setStampStatusは不要
+
       function updateStampUI() {
         const status = getStampStatus();
         let total = 0;
         for (let i = 0; i < 5; i++) {
           const el = document.getElementById(`stamp-${i}`);
-          if (status[i]) {
+          const stampData = status[i]; // i番目のスロットのスタンプデータを取得
+
+          if (stampData) {
             el.classList.add("got");
-            el.innerHTML = `<img src="${status[i].img}" style="width:40px;height:40px;">`;
-            total += status[i].pt;
+            // ar.htmlが保存したimgとptプロパティを利用
+            el.innerHTML = `<img src="${stampData.img}" style="width:40px;height:40px;">`;
+            total += stampData.pt;
           } else {
             el.classList.remove("got");
             el.innerHTML = "?";
@@ -160,16 +157,19 @@
         }
         document.getElementById("point-value").textContent = total;
       }
+
+      // ページが表示されるたびにUIを更新
       window.addEventListener("DOMContentLoaded", updateStampUI);
-      // ダミー: スタンプ獲得テスト用
-      window.testStamp = function (idx, pt) {
-        const status = getStampStatus();
-        status[idx] = STAMPS.find(
-          (s) => s.pt === pt && s.name.startsWith(String.fromCharCode(65 + idx))
-        );
-        setStampStatus(status);
-        updateStampUI();
-      };
+      // AR画面から戻ってきた時にも更新がかかるようにする
+      window.addEventListener("pageshow", updateStampUI);
+
+      // ダミーのテスト関数は不要であれば削除してOK
+      /*
+  window.testStamp = function (idx, pt) {
+    // ...
+  };
+  */
+
       // あそびかた・設置場所ボタン
       function showHowTo() {
         alert(

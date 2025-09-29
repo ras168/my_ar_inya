@@ -336,176 +336,184 @@
 
       <a-entity camera></a-entity>
     </a-scene>
+    <!-- ar.html の末尾にある <script>タグの中身を以下に差し替える -->
     <script>
-      // スタンプラリー機能
+      // --- スタンプのマスターデータ定義 ---
+      // index.htmlの仕様に合わせて、グループとポイント情報を追加
       const STAMP_MARKERS = [
         {
           id: "pattern-marker1-AR-Inya.patt",
           name: "Inya",
           img: "assets/content/content1-AR-Inya.png",
+          group: 0,
+          pt: 1,
         },
         {
           id: "pattern-marker2-AR-Yatai.patt",
           name: "Yatai",
           img: "assets/content/content2-AR-Yatai.png",
+          group: 0,
+          pt: 2,
         },
         {
           id: "pattern-marker3-AR-Program.patt",
           name: "Program",
           img: "assets/content/content3-AR-Program.png",
+          group: 1,
+          pt: 1,
         },
         {
           id: "pattern-marker4-AR-Ennichi.patt",
           name: "Ennichi",
           img: "assets/content/content4-AR-Ennichi.png",
+          group: 1,
+          pt: 2,
         },
         {
           id: "pattern-marker5-AR-Escape.patt",
           name: "Escape",
           img: "assets/content/content5-AR-Escape.png",
+          group: 2,
+          pt: 1,
         },
         {
           id: "pattern-marker6-AR-Survival.patt",
           name: "Survival",
           img: "assets/content/content6-AR-Survival.png",
+          group: 2,
+          pt: 2,
         },
         {
           id: "pattern-marker7-AR-Mystery.patt",
           name: "Mystery",
           img: "assets/content/content7-AR-Mystery.png",
+          group: 3,
+          pt: 1,
         },
         {
           id: "pattern-marker8-AR-Lifegame.patt",
           name: "Lifegame",
           img: "assets/content/content8-AR-Lifegame.png",
+          group: 3,
+          pt: 2,
         },
         {
           id: "pattern-marker9-AR-Horror.patt",
           name: "Horror",
           img: "assets/content/content9-AR-Horror.png",
+          group: 4,
+          pt: 1,
         },
         {
           id: "pattern-marker10-AR-Destiny.patt",
           name: "Destiny",
           img: "assets/content/content10-AR-Destiny.png",
+          group: 4,
+          pt: 2,
         },
-        {
-          id: "pattern-marker11-AR-Sports.patt",
-          name: "Sports",
-          img: "assets/content/content11-AR-Sports.png",
-        },
-        {
-          id: "pattern-marker12-AR-Stage.patt",
-          name: "Stage",
-          img: "assets/content/content12-AR-Stage.png",
-        },
+        // 11, 12番目は index.html にスロットがないため、今回はグループ外とするか、必要に応じてグループを追加
+        // { id: "pattern-marker11-AR-Sports.patt", name: "Sports", img: "assets/content/content11-AR-Sports.png", group: 5, pt: 1 },
+        // { id: "pattern-marker12-AR-Stage.patt", name: "Stage", img: "assets/content/content12-AR-Stage.png", group: 5, pt: 2 },
       ];
 
+      // --- index.html と共通のデータ形式でスタンプを管理 ---
       function getStampStatus() {
-        const data = localStorage.getItem("ar_stamps");
-        if (!data) return {};
+        const data = localStorage.getItem("ar_stamps_v2");
+        // データがない場合は、5つの空スロットを持つ配列を生成
+        if (!data) return [null, null, null, null, null];
         try {
-          return JSON.parse(data);
+          const parsedData = JSON.parse(data);
+          // 配列でなければ初期化
+          return Array.isArray(parsedData)
+            ? parsedData
+            : [null, null, null, null, null];
         } catch {
-          return {};
+          return [null, null, null, null, null];
         }
       }
-      function setStampStatus(status) {
-        localStorage.setItem("ar_stamps", JSON.stringify(status));
-      }
-      function markStamp(markerId) {
-        const status = getStampStatus();
-        status[markerId] = true;
-        setStampStatus(status);
-        updateStampList();
-        checkAllClear();
-      }
-      function updateStampList() {
-        const status = getStampStatus();
-        const items = document.getElementById("stamp-items");
-        items.innerHTML = "";
-        let gotCount = 0;
-        STAMP_MARKERS.forEach((stamp) => {
-          const got = status[stamp.id];
-          if (got) gotCount++;
-          const img = document.createElement("img");
-          img.src = stamp.img;
-          img.className = "stamp" + (got ? " got" : "");
-          img.title = stamp.name + (got ? "（獲得済み）" : "");
-          items.appendChild(img);
-        });
-        document.getElementById(
-          "stamp-status"
-        ).textContent = `獲得数: ${gotCount} / ${STAMP_MARKERS.length}`;
-        if (gotCount === STAMP_MARKERS.length) {
-          document.getElementById("stamp-status").innerHTML +=
-            '<div class="all-clear">コンプリート！</div>';
-        }
-      }
-      function toggleStampList() {
-        const list = document.getElementById("stamp-list");
-        list.style.display =
-          list.style.display === "none" || !list.style.display
-            ? "block"
-            : "none";
-        updateStampList();
-      }
-      function checkAllClear() {
-        const status = getStampStatus();
-        const allClear = STAMP_MARKERS.every((stamp) => status[stamp.id]);
-        if (allClear) {
-          document.getElementById("all-clear-modal").style.display = "flex";
-        }
-      }
-      function closeAllClearModal() {
-        document.getElementById("all-clear-modal").style.display = "none";
-      }
-      // 初期化
-      window.addEventListener("DOMContentLoaded", () => {
-        updateStampList();
-        // マーカー認識イベント追加
-        STAMP_MARKERS.forEach((stamp) => {
-          const markerId = `marker-${stamp.name.toLowerCase()}`;
-          const markerEl = document.getElementById(markerId);
-          if (markerEl) {
-            markerEl.addEventListener("markerFound", () => {
-              markStamp(stamp.id);
-            });
-          }
-        });
-        // gesture-swipeイベントでスタンプ獲得
-        document.querySelectorAll(".swipeable").forEach((img) => {
-          img.addEventListener("gesture-swipe", function (e) {
-            console.log("gesture-swipe fired!", e, img);
-            const markerEl = img.parentElement;
-            if (markerEl && markerEl.getAttribute("url")) {
-              markStamp(markerEl.getAttribute("url"));
-            }
-          });
-        });
-      });
 
-      // スワイプ検知（タッチイベント）
+      function setStampStatus(arr) {
+        localStorage.setItem("ar_stamps_v2", JSON.stringify(arr));
+      }
+
+      // --- スタンプ獲得モーダルの制御 ---
+      function showStampGetModal(stamp) {
+        const modal = document.getElementById("stamp-get-modal");
+        document.getElementById("stamp-get-img").src = stamp.img;
+        document.getElementById(
+          "stamp-get-text"
+        ).textContent = `${stamp.name} のスタンプをゲット！ (+${stamp.pt}pt)`;
+        modal.style.display = "flex";
+      }
+
+      function closeStampGetModal() {
+        document.getElementById("stamp-get-modal").style.display = "none";
+      }
+
+      // --- スタンプ獲得処理（index.htmlの仕様に合わせたロジック） ---
+      function markStamp(markerId) {
+        // 検出されたマーカーの情報を取得
+        const newStamp = STAMP_MARKERS.find((s) => s.id === markerId);
+        if (!newStamp) {
+          console.warn("未定義のマーカーです:", markerId);
+          return;
+        }
+
+        const status = getStampStatus();
+        const groupIndex = newStamp.group;
+        const existingStamp = status[groupIndex];
+
+        // 獲得すべきか判定
+        // 1. そのスロットにまだスタンプがない場合
+        // 2. 新しいスタンプが既存のスタンプよりポイントが高い場合
+        if (!existingStamp || newStamp.pt > existingStamp.pt) {
+          // データを更新
+          status[groupIndex] = {
+            name: newStamp.name,
+            img: newStamp.img,
+            pt: newStamp.pt,
+          };
+          setStampStatus(status);
+
+          // モーダルでお知らせ
+          showStampGetModal(newStamp);
+        } else {
+          console.log("より高ポイントのスタンプを既に獲得済みです。");
+        }
+      }
+
+      // --- スワイプ検出機能 ---
       function addSwipeListener() {
         let touchStartX = null;
         document.querySelectorAll(".swipeable").forEach((img) => {
+          if (img.dataset.swipeListenerAdded) return;
+          img.dataset.swipeListenerAdded = "true";
+
           img.addEventListener("touchstart", (e) => {
             touchStartX = e.touches[0].clientX;
           });
+
           img.addEventListener("touchend", (e) => {
             if (touchStartX === null) return;
             const touchEndX = e.changedTouches[0].clientX;
             if (Math.abs(touchEndX - touchStartX) > 50) {
-              // スワイプ判定
               const markerEl = img.parentElement;
-              if (markerEl && markerEl.getAttribute("url")) {
-                markStamp(markerEl.getAttribute("url"));
+              const markerUrl = markerEl.getAttribute("url");
+              if (markerUrl) {
+                const markerId = markerUrl.split("/").pop();
+                markStamp(markerId);
               }
             }
             touchStartX = null;
           });
         });
       }
+
+      // --- 初期化処理 ---
+      window.addEventListener("DOMContentLoaded", () => {
+        addSwipeListener();
+        setTimeout(addSwipeListener, 1000);
+      });
     </script>
   </body>
 </html>
