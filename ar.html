@@ -3,16 +3,37 @@
   <head>
     <meta charset="utf-8" />
     <title>AR Stamp Rally</title>
-    <!-- 安定バージョンを使用 -->
+    <!-- 安定したライブラリの組み合わせ -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.3/aframe/build/aframe-ar.js"></script>
 
     <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <style>
-      /* CSSはシンプルに保ち、イベントへの影響をなくす */
       body {
         margin: 0;
         overflow: hidden;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+      }
+      .is-open {
+        display: flex;
+      }
+      .modal-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+      }
+      .modal-container {
+        position: relative;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin: auto;
       }
       #stamp-get-modal {
         position: fixed;
@@ -43,15 +64,6 @@
     </style>
   </head>
 
-  <script>
-    function closeModal() {
-      const modal = document.getElementById("modal-1");
-      if (modal) {
-        modal.style.display = "none";
-      }
-    }
-  </script>
-
   <body>
     <div id="stamp-get-modal">
       <div class="modal-content">
@@ -61,56 +73,37 @@
       </div>
     </div>
 
-    <div
-      class="modal micromodal-slide is-open"
-      id="modal-1"
-      style="
-        display: block;
-        position: fixed;
-        inset: 0px;
-        z-index: 9999;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      "
-    >
-      <div
-        class="modal-container"
-        style="
-          background: white;
-          padding: 20px;
-          border-radius: 10px;
-          text-align: center;
-        "
-      >
-        <h2 class="modal-title" id="modal-1-title">注意事項</h2>
-        <div class="modal-content" id="modal-1-content">
+    <div class="modal is-open" id="modal-1">
+      <div class="modal-overlay"></div>
+      <div class="modal-container">
+        <h2 class="modal-title">注意事項</h2>
+        <div class="modal-content">
           安全のため周囲の物や人から十分な距離を確保して、お楽しみください。
         </div>
         <button
           id="closeButton"
-          onclick="closeModal()"
-          style="margin-top: 15px; padding: 8px 16px"
+          onclick="document.getElementById('modal-1').classList.remove('is-open')"
         >
           閉じる
         </button>
       </div>
     </div>
 
-    <!-- 新しいコンポーネント「scene-click-handler」をsceneに追加 -->
+    <!-- arjsのプロパティを標準設定に戻す -->
     <a-scene
       vr-mode-ui="enabled: false;"
       loading-screen="enabled: false;"
-      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+      arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;"
       renderer="logarithmicDepthBuffer: true;"
-      raycaster="objects: .clickable"
-      cursor="rayOrigin: mouse"
-      scene-click-handler
     >
-      <a-camera gps-camera rotation-reader></a-camera>
+      <!-- ▼▼▼ ここが正しいカメラ設定です ▼▼▼ -->
+      <a-entity
+        camera
+        cursor="rayOrigin: mouse; fuse: false;"
+        raycaster="objects: .clickable;"
+      ></a-entity>
 
-      <!-- a-imageに特別な属性は不要。「clickable」クラスのみ -->
+      <!-- 各画像に「stamp-acquirer」コンポーネントを付与 -->
       <a-marker
         type="pattern"
         preset="custom"
@@ -120,6 +113,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -131,6 +125,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -142,6 +137,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -153,6 +149,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -164,6 +161,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -175,6 +173,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -186,6 +185,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -197,6 +197,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -208,6 +209,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -219,6 +221,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -230,6 +233,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
       <a-marker
@@ -241,6 +245,7 @@
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
+          stamp-acquirer
         ></a-image
       ></a-marker>
     </a-scene>
@@ -360,31 +365,13 @@
         }
       }
 
-      // ▼▼▼ 新しい、最も確実なタップ検知コンポーネント ▼▼▼
-      AFRAME.registerComponent("scene-click-handler", {
+      // --- タップでスタンプを獲得する、最も安定したコンポーネント ---
+      AFRAME.registerComponent("stamp-acquirer", {
         init: function () {
-          // A-Frameのシーン全体（画面）がクリックされた時の処理
-          this.el.addEventListener("click", (evt) => {
-            // raycasterが「今、どの要素と交差しているか」のリストを取得
-            const intersectedEls = this.el.components.raycaster.intersectedEls;
-
-            // 交差している要素がなければ、何もしない
-            if (!intersectedEls || intersectedEls.length === 0) {
-              console.log(
-                "クリックしたが、どのオブジェクトにも当たらなかった。"
-              );
-              return;
-            }
-
-            // 最も手前にある要素を取得
-            const clickedEl = intersectedEls[0];
-
-            // 親要素からマーカーのURLを取得
-            const markerEl = clickedEl.parentElement;
+          this.el.addEventListener("click", () => {
+            const markerEl = this.el.parentElement;
             const markerUrl = markerEl.getAttribute("url");
-
             if (markerUrl) {
-              console.log("オブジェクトがクリックされました:", markerUrl);
               const markerId = markerUrl.split("/").pop();
               markStamp(markerId);
             }
