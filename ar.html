@@ -337,9 +337,9 @@
       <a-entity camera></a-entity>
     </a-scene>
     <!-- ar.html の末尾にある <script>タグの中身を以下に差し替える -->
+    <!-- ar.html の末尾にある <script>タグの中身を以下に差し替える -->
     <script>
       // --- スタンプのマスターデータ定義 ---
-      // index.htmlの仕様に合わせて、グループとポイント情報を追加
       const STAMP_MARKERS = [
         {
           id: "pattern-marker1-AR-Inya.patt",
@@ -411,19 +411,14 @@
           group: 4,
           pt: 2,
         },
-        // 11, 12番目は index.html にスロットがないため、今回はグループ外とするか、必要に応じてグループを追加
-        // { id: "pattern-marker11-AR-Sports.patt", name: "Sports", img: "assets/content/content11-AR-Sports.png", group: 5, pt: 1 },
-        // { id: "pattern-marker12-AR-Stage.patt", name: "Stage", img: "assets/content/content12-AR-Stage.png", group: 5, pt: 2 },
       ];
 
       // --- index.html と共通のデータ形式でスタンプを管理 ---
       function getStampStatus() {
         const data = localStorage.getItem("ar_stamps_v2");
-        // データがない場合は、5つの空スロットを持つ配列を生成
         if (!data) return [null, null, null, null, null];
         try {
           const parsedData = JSON.parse(data);
-          // 配列でなければ初期化
           return Array.isArray(parsedData)
             ? parsedData
             : [null, null, null, null, null];
@@ -450,69 +445,95 @@
         document.getElementById("stamp-get-modal").style.display = "none";
       }
 
-      // --- スタンプ獲得処理（index.htmlの仕様に合わせたロジック） ---
+      // --- スタンプ獲得処理 ---
       function markStamp(markerId) {
-        // 検出されたマーカーの情報を取得
+        console.log(`[markStamp] 処理開始: ${markerId}`);
         const newStamp = STAMP_MARKERS.find((s) => s.id === markerId);
         if (!newStamp) {
-          console.warn("未定義のマーカーです:", markerId);
+          console.warn(`[markStamp] 未定義のマーカー: ${markerId}`);
           return;
         }
-
         const status = getStampStatus();
         const groupIndex = newStamp.group;
         const existingStamp = status[groupIndex];
-
-        // 獲得すべきか判定
-        // 1. そのスロットにまだスタンプがない場合
-        // 2. 新しいスタンプが既存のスタンプよりポイントが高い場合
         if (!existingStamp || newStamp.pt > existingStamp.pt) {
-          // データを更新
           status[groupIndex] = {
             name: newStamp.name,
             img: newStamp.img,
             pt: newStamp.pt,
           };
           setStampStatus(status);
-
-          // モーダルでお知らせ
           showStampGetModal(newStamp);
         } else {
-          console.log("より高ポイントのスタンプを既に獲得済みです。");
+          console.log("[markStamp] より高ポイントのスタンプを既に獲得済み");
         }
       }
 
-      // --- スワイプ検出機能 ---
-      function addSwipeListener() {
+      // --- スワイプ検出機能 (A-Frameネイティブ版) ---
+      function addAFrameSwipeListener() {
+        console.log("[Listener] A-Frameスワイプ検出リスナーを設定します。");
+        const swipeableElements = document.querySelectorAll(".swipeable");
         let touchStartX = null;
-        document.querySelectorAll(".swipeable").forEach((img) => {
-          if (img.dataset.swipeListenerAdded) return;
-          img.dataset.swipeListenerAdded = "true";
 
-          img.addEventListener("touchstart", (e) => {
-            touchStartX = e.touches[0].clientX;
+        swipeableElements.forEach((el) => {
+          // mousedown: タッチ開始
+          el.addEventListener("mousedown", function (e) {
+            // e.detail.browserEventで元のブラウザイベントにアクセスできる
+            if (e.detail.browserEvent.clientX) {
+              touchStartX = e.detail.browserEvent.clientX;
+              console.log(`[mousedown] イベント発生！ 開始X: ${touchStartX}`);
+            }
           });
 
-          img.addEventListener("touchend", (e) => {
+          // mouseup: タッチ終了
+          el.addEventListener("mouseup", function (e) {
             if (touchStartX === null) return;
-            const touchEndX = e.changedTouches[0].clientX;
-            if (Math.abs(touchEndX - touchStartX) > 50) {
-              const markerEl = img.parentElement;
-              const markerUrl = markerEl.getAttribute("url");
-              if (markerUrl) {
-                const markerId = markerUrl.split("/").pop();
-                markStamp(markerId);
+
+            if (e.detail.browserEvent.changedTouches) {
+              // スマホの場合
+              const touchEndX = e.detail.browserEvent.changedTouches[0].clientX;
+              console.log(`[mouseup] イベント発生！ 終了X: ${touchEndX}`);
+              if (Math.abs(touchEndX - touchStartX) > 50) {
+                console.log("スワイプを検出しました！");
+                const markerEl = el.parentElement;
+                const markerUrl = markerEl.getAttribute("url");
+                if (markerUrl) {
+                  const markerId = markerUrl.split("/").pop();
+                  markStamp(markerId);
+                }
               }
             }
-            touchStartX = null;
+
+            // 念のため、PCでのデバッグ用に mouseup イベントの座標も見る
+            else if (e.detail.browserEvent.clientX) {
+              const touchEndX = e.detail.browserEvent.clientX;
+              console.log(`[mouseup] イベント発生！ 終了X: ${touchEndX}`);
+              if (Math.abs(touchEndX - touchStartX) > 50) {
+                console.log("スワイプを検出しました！(PC)");
+                const markerEl = el.parentElement;
+                const markerUrl = markerEl.getAttribute("url");
+                if (markerUrl) {
+                  const markerId = markerUrl.split("/").pop();
+                  markStamp(markerId);
+                }
+              }
+            }
+
+            touchStartX = null; // リセット
           });
         });
       }
 
       // --- 初期化処理 ---
       window.addEventListener("DOMContentLoaded", () => {
-        addSwipeListener();
-        setTimeout(addSwipeListener, 1000);
+        const sceneEl = document.querySelector("a-scene");
+        if (sceneEl.hasLoaded) {
+          addAFrameSwipeListener();
+        } else {
+          sceneEl.addEventListener("loaded", () => {
+            addAFrameSwipeListener();
+          });
+        }
       });
     </script>
   </body>
