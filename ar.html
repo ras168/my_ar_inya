@@ -3,69 +3,374 @@
   <head>
     <meta charset="utf-8" />
     <title>AR Stamp Rally</title>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <!-- ★重要★ 以下の2行はタッチ操作が競合するため、必ず削除またはコメントアウトしてください -->
-    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script> -->
-    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script> -->
+    <!-- ▼▼▼ ライブラリを安定バージョンに変更 ▼▼▼ -->
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.3/aframe/build/aframe-ar.js"></script>
+
     <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
-    <link href="ar.css" rel="stylesheet" />
+    <!-- ar.cssは万が一のイベント阻害を避けるため、一時的にコメントアウトします -->
+    <!-- <link href="ar.css" rel="stylesheet" /> -->
     <style>
-      #stamp-get-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:none;align-items:center;justify-content:center;}
-      #stamp-get-modal .modal-content{background:#fff;border-radius:16px;padding:32px;text-align:center;font-size:1.2em;color:#333;box-shadow:0 4px 16px rgba(0,0,0,0.3);}
-      #stamp-get-modal img{width:80px;height:80px;margin-bottom:12px;}
+      #stamp-get-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #stamp-get-modal .modal-content {
+        background: #fff;
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        font-size: 1.2em;
+        color: #333;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      }
+      #stamp-get-modal img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 12px;
+      }
     </style>
   </head>
-  
+
   <script>
-    // 注意事項モーダルを閉じる関数
     function closeModal() {
       const modal = document.getElementById("modal-1");
       if (modal) {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
       }
     }
   </script>
 
   <body style="margin: 0; overflow: hidden">
-    <div id="stamp-get-modal"><div class="modal-content"><img id="stamp-get-img" src="" alt="スタンプ" /><div id="stamp-get-text"></div><button onclick="closeStampGetModal()">閉じる</button></div></div>
-    
-    <div class="modal micromodal-slide is-open" id="modal-1" aria-hidden="false">
+    <div id="stamp-get-modal">
+      <div class="modal-content">
+        <img id="stamp-get-img" src="" alt="スタンプ" />
+        <div id="stamp-get-text"></div>
+        <button onclick="closeStampGetModal()">閉じる</button>
+      </div>
+    </div>
+
+    <div
+      class="modal micromodal-slide is-open"
+      id="modal-1"
+      aria-hidden="false"
+    >
       <div class="modal-overlay" tabindex="-1">
-        <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-          <header class="modal-header"><h2 class="modal-title" id="modal-1-title">注意事項</h2></header>
-          <div class="modal-content" id="modal-1-content">安全のため周囲の物や人から十分な距離を確保して、お楽しみください。</div>
+        <div
+          class="modal-container"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-1-title"
+        >
+          <header class="modal-header">
+            <h2 class="modal-title" id="modal-1-title">注意事項</h2>
+          </header>
+          <div class="modal-content" id="modal-1-content">
+            安全のため周囲の物や人から十分な距離を確保して、お楽しみください。
+          </div>
           <button id="closeButton" onclick="closeModal()">閉じる</button>
         </div>
       </div>
     </div>
 
+    <!-- arjsのプロパティ名を最新版に合わせる -->
     <a-scene
-      device-orientation-permission-ui="enabled:false"
       vr-mode-ui="enabled: false;"
       loading-screen="enabled: false;"
-      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; patternRatio: 0.75;"
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
       id="scene"
-      embedded>
+      embedded
+      renderer="logarithmicDepthBuffer: true;"
+    >
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker1-AR-Inya.patt"
+        ><a-image
+          src="assets/content/content1-AR-Inya.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker2-AR-Yatai.patt"
+        ><a-image
+          src="assets/content/content2-AR-Yatai.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker3-AR-Program.patt"
+        ><a-image
+          src="assets/content/content3-AR-Program.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker4-AR-Ennichi.patt"
+        ><a-image
+          src="assets/content/content4-AR-Ennichi.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker5-AR-Escape.patt"
+        ><a-image
+          src="assets/content/content5-AR-Escape.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker6-AR-Survival.patt"
+        ><a-image
+          src="assets/content/content6-AR-Survival.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker7-AR-Mystery.patt"
+        ><a-image
+          src="assets/content/content7-AR-Mystery.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker8-AR-Lifegame.patt"
+        ><a-image
+          src="assets/content/content8-AR-Lifegame.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker9-AR-Horror.patt"
+        ><a-image
+          src="assets/content/content9-AR-Horror.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker10-AR-Destiny.patt"
+        ><a-image
+          src="assets/content/content10-AR-Destiny.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker11-AR-Sports.patt"
+        ><a-image
+          src="assets/content/content11-AR-Sports.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
+      <a-marker
+        type="pattern"
+        preset="custom"
+        url="assets/marker/pattern-marker12-AR-Stage.patt"
+        ><a-image
+          src="assets/content/content12-AR-Stage.png"
+          scale="3 3 3"
+          class="clickable"
+          rotation="-90 0 0"
+          stamp-acquirer
+        ></a-image
+      ></a-marker>
 
-      <!-- 各画像に新しいコンポーネント「stamp-acquirer」を追加 -->
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker1-AR-Inya.patt"><a-image src="assets/content/content1-AR-Inya.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker2-AR-Yatai.patt"><a-image src="assets/content/content2-AR-Yatai.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker3-AR-Program.patt"><a-image src="assets/content/content3-AR-Program.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker4-AR-Ennichi.patt"><a-image src="assets/content/content4-AR-Ennichi.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker5-AR-Escape.patt"><a-image src="assets/content/content5-AR-Escape.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker6-AR-Survival.patt"><a-image src="assets/content/content6-AR-Survival.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker7-AR-Mystery.patt"><a-image src="assets/content/content7-AR-Mystery.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker8-AR-Lifegame.patt"><a-image src="assets/content/content8-AR-Lifegame.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker9-AR-Horror.patt"><a-image src="assets/content/content9-AR-Horror.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker10-AR-Destiny.patt"><a-image src="assets/content/content10-AR-Destiny.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker11-AR-Sports.patt"><a-image src="assets/content/content11-AR-Sports.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      <a-marker type="pattern" preset="custom" url="assets/marker/pattern-marker12-AR-Stage.patt"><a-image src="assets/content/content12-AR-Stage.png" scale="3 3 3" class="clickable" rotation="-90 0 0" stamp-acquirer></a-image></a-marker>
-      
-      <!-- カメラにraycasterとcursorを設定 (これは正しい設定です) -->
-      <a-entity camera cursor="rayOrigin: mouse; fuse: false;" raycaster="objects: .clickable;"></a-entity>
+      <a-entity
+        camera
+        cursor="rayOrigin: mouse; fuse: false;"
+        raycaster="objects: .clickable;"
+      ></a-entity>
     </a-scene>
 
     <script>
-      // --- スタンプデータと管理関数 
+      // --- スタンプデータと管理関数 (変更なし) ---
+      const STAMP_MARKERS = [
+        {
+          id: "pattern-marker1-AR-Inya.patt",
+          name: "Inya",
+          img: "assets/content/content1-AR-Inya.png",
+          group: 0,
+          pt: 1,
+        },
+        {
+          id: "pattern-marker2-AR-Yatai.patt",
+          name: "Yatai",
+          img: "assets/content/content2-AR-Yatai.png",
+          group: 0,
+          pt: 2,
+        },
+        {
+          id: "pattern-marker3-AR-Program.patt",
+          name: "Program",
+          img: "assets/content/content3-AR-Program.png",
+          group: 1,
+          pt: 1,
+        },
+        {
+          id: "pattern-marker4-AR-Ennichi.patt",
+          name: "Ennichi",
+          img: "assets/content/content4-AR-Ennichi.png",
+          group: 1,
+          pt: 2,
+        },
+        {
+          id: "pattern-marker5-AR-Escape.patt",
+          name: "Escape",
+          img: "assets/content/content5-AR-Escape.png",
+          group: 2,
+          pt: 1,
+        },
+        {
+          id: "pattern-marker6-AR-Survival.patt",
+          name: "Survival",
+          img: "assets/content/content6-AR-Survival.png",
+          group: 2,
+          pt: 2,
+        },
+        {
+          id: "pattern-marker7-AR-Mystery.patt",
+          name: "Mystery",
+          img: "assets/content/content7-AR-Mystery.png",
+          group: 3,
+          pt: 1,
+        },
+        {
+          id: "pattern-marker8-AR-Lifegame.patt",
+          name: "Lifegame",
+          img: "assets/content/content8-AR-Lifegame.png",
+          group: 3,
+          pt: 2,
+        },
+        {
+          id: "pattern-marker9-AR-Horror.patt",
+          name: "Horror",
+          img: "assets/content/content9-AR-Horror.png",
+          group: 4,
+          pt: 1,
+        },
+        {
+          id: "pattern-marker10-AR-Destiny.patt",
+          name: "Destiny",
+          img: "assets/content/content10-AR-Destiny.png",
+          group: 4,
+          pt: 2,
+        },
+      ];
+      function getStampStatus() {
+        const d = localStorage.getItem("ar_stamps_v2");
+        if (!d) return [null, null, null, null, null];
+        try {
+          const p = JSON.parse(d);
+          return Array.isArray(p) ? p : [null, null, null, null, null];
+        } catch {
+          return [null, null, null, null, null];
+        }
+      }
+      function setStampStatus(a) {
+        localStorage.setItem("ar_stamps_v2", JSON.stringify(a));
+      }
+      function showStampGetModal(s) {
+        const m = document.getElementById("stamp-get-modal");
+        m.querySelector("#stamp-get-img").src = s.img;
+        m.querySelector(
+          "#stamp-get-text"
+        ).textContent = `${s.name} のスタンプをゲット！ (+${s.pt}pt)`;
+        m.style.display = "flex";
+      }
+      function closeStampGetModal() {
+        document.getElementById("stamp-get-modal").style.display = "none";
+      }
+      function markStamp(markerId) {
+        const newStamp = STAMP_MARKERS.find((s) => s.id === markerId);
+        if (!newStamp) return;
+        const status = getStampStatus();
+        const groupIndex = newStamp.group;
+        const existingStamp = status[groupIndex];
+        if (!existingStamp || newStamp.pt > existingStamp.pt) {
+          status[groupIndex] = {
+            name: newStamp.name,
+            img: newStamp.img,
+            pt: newStamp.pt,
+          };
+          setStampStatus(status);
+          showStampGetModal(newStamp);
+        }
+      }
+
+      // --- タップでスタンプを獲得するコンポーネント (変更なし) ---
+      AFRAME.registerComponent("stamp-acquirer", {
+        init: function () {
+          this.el.addEventListener("click", () => {
+            const markerEl = this.el.parentElement;
+            const markerUrl = markerEl.getAttribute("url");
+            if (markerUrl) {
+              const markerId = markerUrl.split("/").pop();
+              markStamp(markerId);
+            }
+          });
+        },
+      });
+    </script>
+  </body>
+</html>
