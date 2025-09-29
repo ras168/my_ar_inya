@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <!-- gesture-handlerは回転機能が競合するため、読み込まないことを推奨します -->
+    <!-- ★重要★ 以下の2行はタッチ操作が競合するため、必ず削除またはコメントアウトしてください -->
     <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script> -->
-    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/gesture-handler.js"></script> -->
+    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script> -->
     <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <link href="ar.css" rel="stylesheet" />
     <style>
@@ -51,15 +51,14 @@
     gtag("js", new Date());
     gtag("config", "G-EZXC8JB271");
   </script>
-
   <script>
     MicroModal.init();
     function closeModal() {
-      document.getElementById("modal-1").ariaHidden = "true";
-      document.getElementById("modal-1").className = "modal micromodal-slide";
+      const modal = document.getElementById("modal-1");
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
     }
   </script>
-
   <body style="margin: 0; overflow: hidden">
     <div id="stamp-get-modal">
       <div class="modal-content">
@@ -73,7 +72,6 @@
       id="modal-1"
       aria-hidden="false"
     >
-      <!-- 背景のオーバーレイ -->
       <div class="modal-overlay" tabindex="-1" data-micromodal-close>
         <div
           class="modal-container"
@@ -84,18 +82,14 @@
           <header class="modal-header">
             <h2 class="modal-title" id="modal-1-title">注意事項</h2>
           </header>
-          <!-- モーダルのコンテンツ -->
           <div class="modal-content" id="modal-1-content">
-            安全のため周囲の物や人から十分な距離を確保して、お楽しみください。<br />
-            <br />ARコンテンツの表示に乱れがある際はページ再読み込みのほか、<br />
-            もし正常に動作しない際はお近くのスタッフへお問い合わせください。
+            安全のため周囲の物や人から十分な距離を確保して、お楽しみください。<br /><br />もし正常に動作しない際はお近くのスタッフへお問い合わせください。
           </div>
           <button id="closeButton" onclick="closeModal()">閉じる</button>
         </div>
       </div>
     </div>
 
-    <!-- ▼▼▼ HTMLの修正箇所 ▼▼▼ -->
     <a-scene
       device-orientation-permission-ui="enabled:false"
       vr-mode-ui="enabled: false;"
@@ -103,192 +97,164 @@
       arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; patternRatio: 0.75;"
       id="scene"
       embedded
-      gesture-detector
     >
-      <!-- ▲▲▲ cursor属性を削除 ▲▲▲ -->
-
-      <!-- ▼▼▼ マーカーからcursorとraycasterを削除 ▼▼▼ -->
       <a-marker
-        id="marker1"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker1-AR-Inya.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content1-AR-Inya.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker2"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker2-AR-Yatai.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content2-AR-Yatai.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker3"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker3-AR-Program.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content3-AR-Program.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker4"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker4-AR-Ennichi.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content4-AR-Ennichi.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker5"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker5-AR-Escape.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content5-AR-Escape.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker6"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker6-AR-Survival.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content6-AR-Survival.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker7"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker7-AR-Mystery.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content7-AR-Mystery.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker8"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker8-AR-Lifegame.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content8-AR-Lifegame.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker9"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker9-AR-Horror.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content9-AR-Horror.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker10"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker10-AR-Destiny.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content10-AR-Destiny.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker11"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker11-AR-Sports.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content11-AR-Sports.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
-
+          swipe-detector
+        ></a-image
+      ></a-marker>
       <a-marker
-        id="marker12"
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker12-AR-Stage.patt"
         emitevents="true"
-      >
-        <a-image
+        ><a-image
           src="assets/content/content12-AR-Stage.png"
-          scale="3.0 3.0 3.0"
-          class="clickable swipeable"
+          scale="3 3 3"
+          class="clickable"
           rotation="-90 0 0"
-        ></a-image>
-      </a-marker>
+          swipe-detector
+        ></a-image
+      ></a-marker>
 
-      <!-- ▼▼▼ ここにcursorとraycasterを正しく設定 ▼▼▼ -->
       <a-entity
         camera
         cursor="rayOrigin: mouse; fuse: false;"
@@ -297,7 +263,7 @@
     </a-scene>
 
     <script>
-      // --- スタンプのマスターデータ定義 ---
+      // --- スタンプデータと管理関数 (変更なし) ---
       const STAMP_MARKERS = [
         {
           id: "pattern-marker1-AR-Inya.patt",
@@ -370,40 +336,30 @@
           pt: 2,
         },
       ];
-
-      // --- index.html と共通のデータ形式でスタンプを管理 ---
       function getStampStatus() {
-        const data = localStorage.getItem("ar_stamps_v2");
-        if (!data) return [null, null, null, null, null];
+        const d = localStorage.getItem("ar_stamps_v2");
+        if (!d) return [null, null, null, null, null];
         try {
-          const parsedData = JSON.parse(data);
-          return Array.isArray(parsedData)
-            ? parsedData
-            : [null, null, null, null, null];
+          const p = JSON.parse(d);
+          return Array.isArray(p) ? p : [null, null, null, null, null];
         } catch {
           return [null, null, null, null, null];
         }
       }
-
-      function setStampStatus(arr) {
-        localStorage.setItem("ar_stamps_v2", JSON.stringify(arr));
+      function setStampStatus(a) {
+        localStorage.setItem("ar_stamps_v2", JSON.stringify(a));
       }
-
-      // --- スタンプ獲得モーダルの制御 ---
-      function showStampGetModal(stamp) {
-        const modal = document.getElementById("stamp-get-modal");
-        document.getElementById("stamp-get-img").src = stamp.img;
-        document.getElementById(
-          "stamp-get-text"
-        ).textContent = `${stamp.name} のスタンプをゲット！ (+${stamp.pt}pt)`;
-        modal.style.display = "flex";
+      function showStampGetModal(s) {
+        const m = document.getElementById("stamp-get-modal");
+        m.querySelector("#stamp-get-img").src = s.img;
+        m.querySelector(
+          "#stamp-get-text"
+        ).textContent = `${s.name} のスタンプをゲット！ (+${s.pt}pt)`;
+        m.style.display = "flex";
       }
-
       function closeStampGetModal() {
         document.getElementById("stamp-get-modal").style.display = "none";
       }
-
-      // --- スタンプ獲得処理 ---
       function markStamp(markerId) {
         const newStamp = STAMP_MARKERS.find((s) => s.id === markerId);
         if (!newStamp) return;
@@ -421,73 +377,48 @@
         }
       }
 
-      // --- スワイプ検出機能 (要素単体にリスナーを設定する関数) ---
-      function addSwipeListenerToElement(el) {
-        // デバッグ用にログを出力
-        console.log("スワイプ監視役を画像に設定しました:", el);
-        let touchStartX = null;
+      // ▼▼▼ ここからが新しいコードです ▼▼▼
+      // 「swipe-detector」という名前のカスタムコンポーネントをA-Frameに登録
+      AFRAME.registerComponent("swipe-detector", {
+        init: function () {
+          // このコンポーネントが付けられた要素（<a-image>）自身
+          const el = this.el;
+          let touchStartX = null;
 
-        // mousedown: タッチ開始
-        el.addEventListener("mousedown", function (e) {
-          const sourceEvent = e.detail.sourceEvent;
-          if (!sourceEvent) return;
-          touchStartX =
-            sourceEvent.clientX ||
-            (sourceEvent.touches && sourceEvent.touches[0].clientX);
-          console.log("タッチ開始 (mousedown):", touchStartX);
-        });
-
-        // mouseup: タッチ終了
-        el.addEventListener("mouseup", function (e) {
-          if (touchStartX === null) return;
-          const sourceEvent = e.detail.sourceEvent;
-          if (!sourceEvent) return;
-          const touchEndX =
-            (sourceEvent.changedTouches &&
-              sourceEvent.changedTouches[0].clientX) ||
-            sourceEvent.clientX;
-          console.log("タッチ終了 (mouseup):", touchEndX);
-
-          if (
-            touchEndX !== undefined &&
-            Math.abs(touchEndX - touchStartX) > 50
-          ) {
-            console.log("スワイプを検知しました！");
-            const markerEl = el.parentElement;
-            const markerUrl = markerEl.getAttribute("url");
-            if (markerUrl) {
-              const markerId = markerUrl.split("/").pop();
-              markStamp(markerId);
-            }
-          }
-          touchStartX = null;
-        });
-      }
-
-      // --- 初期化処理 (マーカー発見時にリスナーを設定する方式) ---
-      function setupAllMarkerListeners() {
-        const allMarkers = document.querySelectorAll("a-marker");
-        allMarkers.forEach((marker) => {
-          marker.addEventListener("markerFound", () => {
-            const imageEl = marker.querySelector(".swipeable");
-            // まだ監視役が設定されていなければ、設定する
-            if (imageEl && !imageEl.dataset.swipeListenerAdded) {
-              addSwipeListenerToElement(imageEl);
-              imageEl.dataset.swipeListenerAdded = "true"; // 設定済みの印を付ける
-            }
+          // mousedownイベント（タッチ開始）の監視
+          el.addEventListener("mousedown", function (e) {
+            const sourceEvent = e.detail.sourceEvent;
+            if (!sourceEvent) return;
+            touchStartX =
+              sourceEvent.clientX ||
+              (sourceEvent.touches && sourceEvent.touches[0].clientX);
           });
-        });
-      }
 
-      window.addEventListener("DOMContentLoaded", () => {
-        const sceneEl = document.querySelector("a-scene");
-        if (sceneEl.hasLoaded) {
-          setupAllMarkerListeners();
-        } else {
-          sceneEl.addEventListener("loaded", () => {
-            setupAllMarkerListeners();
+          // mouseupイベント（タッチ終了）の監視
+          el.addEventListener("mouseup", function (e) {
+            if (touchStartX === null) return;
+            const sourceEvent = e.detail.sourceEvent;
+            if (!sourceEvent) return;
+            const touchEndX =
+              (sourceEvent.changedTouches &&
+                sourceEvent.changedTouches[0].clientX) ||
+              sourceEvent.clientX;
+
+            if (
+              touchEndX !== undefined &&
+              Math.abs(touchEndX - touchStartX) > 50
+            ) {
+              const markerEl = el.parentElement; // 親要素である<a-marker>を取得
+              const markerUrl = markerEl.getAttribute("url");
+              if (markerUrl) {
+                const markerId = markerUrl.split("/").pop();
+                // グローバル関数である markStamp を呼び出す
+                markStamp(markerId);
+              }
+            }
+            touchStartX = null;
           });
-        }
+        },
       });
     </script>
   </body>
