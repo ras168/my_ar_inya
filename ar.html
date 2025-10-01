@@ -4,9 +4,6 @@
     <meta charset="utf-8" />
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <!-- ★重要★ 以下の2行はタッチ操作が競合するため、必ず削除またはコメントアウトしてください -->
-    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script> -->
-    <!-- <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script> -->
     <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <link href="ar.css" rel="stylesheet" />
     <style>
@@ -38,7 +35,6 @@
       }
     </style>
   </head>
-  <!-- Google tag (gtag.js) -->
   <script
     async
     src="https://www.googletagmanager.com/gtag/js?id=G-EZXC8JB271"
@@ -97,163 +93,176 @@
       arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; patternRatio: 0.75;"
       id="scene"
       embedded
+      global-swipe-handler
     >
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker1-AR-Inya.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content1-AR-Inya.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker1-AR-Inya.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker2-AR-Yatai.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content2-AR-Yatai.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker2-AR-Yatai.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker3-AR-Program.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content3-AR-Program.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker3-AR-Program.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker4-AR-Ennichi.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content4-AR-Ennichi.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker4-AR-Ennichi.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker5-AR-Escape.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content5-AR-Escape.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker5-AR-Escape.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker6-AR-Survival.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content6-AR-Survival.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker6-AR-Survival.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker7-AR-Mystery.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content7-AR-Mystery.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker7-AR-Mystery.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker8-AR-Lifegame.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content8-AR-Lifegame.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker8-AR-Lifegame.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker9-AR-Horror.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content9-AR-Horror.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker9-AR-Horror.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker10-AR-Destiny.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content10-AR-Destiny.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker10-AR-Destiny.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker11-AR-Sports.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content11-AR-Sports.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker11-AR-Sports.patt"
+        ></a-image>
+      </a-marker>
       <a-marker
         type="pattern"
         preset="custom"
         url="assets/marker/pattern-marker12-AR-Stage.patt"
         emitevents="true"
-        ><a-image
+      >
+        <a-image
           src="assets/content/content12-AR-Stage.png"
           scale="3 3 3"
           class="clickable"
           rotation="-90 0 0"
-          swipe-detector
-        ></a-image
-      ></a-marker>
+          data-marker-id="pattern-marker12-AR-Stage.patt"
+        ></a-image>
+      </a-marker>
 
       <a-entity
         camera
@@ -261,9 +270,7 @@
         raycaster="objects: .clickable;"
       ></a-entity>
     </a-scene>
-
     <script>
-      // --- スタンプデータと管理関数 (変更なし) ---
       const STAMP_MARKERS = [
         {
           id: "pattern-marker1-AR-Inya.patt",
@@ -377,46 +384,88 @@
         }
       }
 
-      // ▼▼▼ ここからが新しいコードです ▼▼▼
-      // 「swipe-detector」という名前のカスタムコンポーネントをA-Frameに登録
-      AFRAME.registerComponent("swipe-detector", {
+      AFRAME.registerComponent("global-swipe-handler", {
         init: function () {
-          // このコンポーネントが付けられた要素（<a-image>）自身
-          const el = this.el;
-          let touchStartX = null;
+          this.touchStartX = 0;
+          this.currentlyHoveredEl = null;
+          this.visibleMarkers = new Set();
 
-          // mousedownイベント（タッチ開始）の監視
-          el.addEventListener("mousedown", function (e) {
-            const sourceEvent = e.detail.sourceEvent;
-            if (!sourceEvent) return;
-            touchStartX =
-              sourceEvent.clientX ||
-              (sourceEvent.touches && sourceEvent.touches[0].clientX);
+          this.markerRegistry = {};
+
+          const sceneEl = this.el;
+          const canvasEl = sceneEl.canvas;
+
+          const allMarkers = document.querySelectorAll("a-marker");
+          allMarkers.forEach((markerEl) => {
+            const imageEl = markerEl.querySelector("a-image");
+            if (!imageEl) return;
+            const markerId = imageEl.getAttribute("data-marker-id");
+
+            if (markerId) {
+              this.markerRegistry[markerId] = markerEl;
+            }
+
+            markerEl.addEventListener("markerFound", () => {
+              this.visibleMarkers.add(markerId);
+            });
+            markerEl.addEventListener("markerLost", () => {
+              this.visibleMarkers.delete(markerId);
+            });
           });
 
-          // mouseupイベント（タッチ終了）の監視
-          el.addEventListener("mouseup", function (e) {
-            if (touchStartX === null) return;
-            const sourceEvent = e.detail.sourceEvent;
-            if (!sourceEvent) return;
-            const touchEndX =
-              (sourceEvent.changedTouches &&
-                sourceEvent.changedTouches[0].clientX) ||
-              sourceEvent.clientX;
-
+          sceneEl.addEventListener("mouseenter", (evt) => {
+            const intersectedEl = evt.detail.intersectedEl;
             if (
-              touchEndX !== undefined &&
-              Math.abs(touchEndX - touchStartX) > 50
+              intersectedEl &&
+              intersectedEl.classList.contains("clickable")
             ) {
-              const markerEl = el.parentElement; // 親要素である<a-marker>を取得
-              const markerUrl = markerEl.getAttribute("url");
-              if (markerUrl) {
-                const markerId = markerUrl.split("/").pop();
-                // グローバル関数である markStamp を呼び出す
-                markStamp(markerId);
+              this.currentlyHoveredEl = intersectedEl;
+            }
+          });
+          sceneEl.addEventListener("mouseleave", (evt) => {
+            if (this.currentlyHoveredEl === evt.detail.intersectedEl) {
+              this.currentlyHoveredEl = null;
+            }
+          });
+
+          canvasEl.addEventListener("touchstart", (evt) => {
+            this.touchStartX = evt.touches[0].clientX;
+          });
+          canvasEl.addEventListener("touchend", (evt) => {
+            if (this.touchStartX === 0) return;
+
+            const touchEndX = evt.changedTouches[0].clientX;
+            const deltaX = touchEndX - this.touchStartX;
+            this.touchStartX = 0;
+
+            if (Math.abs(deltaX) > 50) {
+              if (this.currentlyHoveredEl) {
+                const markerId =
+                  this.currentlyHoveredEl.getAttribute("data-marker-id");
+                const markerEl = this.markerRegistry[markerId];
+
+                if (markerEl && markerEl.object3D.visible) {
+                  console.log(
+                    "スワイプ成功(直接・検証済)！ 対象マーカー:",
+                    markerId
+                  );
+                  markStamp(markerId);
+                  return;
+                }
+              }
+
+              if (this.visibleMarkers.size === 1) {
+                const markerId = this.visibleMarkers.values().next().value;
+                const markerEl = this.markerRegistry[markerId];
+                if (markerEl && markerEl.object3D.visible) {
+                  console.log(
+                    "スワイプ成功(間接・検証済)！ 対象マーカー:",
+                    markerId
+                  );
+                  markStamp(markerId);
+                }
               }
             }
-            touchStartX = null;
           });
         },
       });
