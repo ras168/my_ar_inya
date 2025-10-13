@@ -167,21 +167,53 @@
   top: 24px;
   left: 50%;
   transform: translate(-50%, -8px);
-  padding: 12px 20px;
-  border-radius: 999px;
-  background: rgba(25, 118, 210, 0.92);
+  padding: 12px 18px;
+  border-radius: 18px;
+  background: rgba(25, 118, 210, 0.95);
   color: #fff;
   font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  box-shadow: 0 6px 18px rgba(25, 118, 210, 0.35);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  box-shadow: 0 6px 22px rgba(25, 118, 210, 0.35);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 12000;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 220px;
 }
 
 #swipe-toast.show {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+#swipe-toast img {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+#swipe-toast .swipe-toast-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#swipe-toast .swipe-toast-title {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.85;
+}
+
+#swipe-toast .swipe-toast-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }

@@ -491,14 +491,29 @@
         document.getElementById("stamp-get-modal").style.display = "none";
       }
       let swipeToastTimer = null;
-      function showSwipeToast(message = "swiped") {
+      function showSwipeToast(stamp) {
         const toastEl = document.getElementById("swipe-toast");
         if (!toastEl) return;
         if (swipeToastTimer) {
           clearTimeout(swipeToastTimer);
           swipeToastTimer = null;
         }
-        toastEl.textContent = message;
+        if (stamp) {
+          toastEl.innerHTML = `
+            <img src="${stamp.img}" alt="${stamp.name}" />
+            <div class="swipe-toast-text">
+              <span class="swipe-toast-title">STAMP GET!</span>
+              <span class="swipe-toast-name">${stamp.name}</span>
+            </div>
+          `;
+        } else {
+          toastEl.innerHTML = `
+            <div class="swipe-toast-text">
+              <span class="swipe-toast-title">SWIPED</span>
+              <span class="swipe-toast-name">スタンプを検出しました</span>
+            </div>
+          `;
+        }
         toastEl.classList.add("show");
         swipeToastTimer = setTimeout(() => {
           toastEl.classList.remove("show");
@@ -506,9 +521,10 @@
         }, 900);
       }
 
-      function markStamp(markerId) {
+      function markStamp(markerId, providedStamp = null) {
         console.log("[SwipeDebug] markStamp called", { markerId });
-        const newStamp = STAMP_MARKERS.find((s) => s.id === markerId);
+        const newStamp =
+          providedStamp || STAMP_MARKERS.find((s) => s.id === markerId);
         if (!newStamp) return;
         const status = getStampStatus();
         const groupIndex = newStamp.group;
@@ -533,9 +549,16 @@
 
           component.touchStartX = null;
           component.touchStartTime = null;
+          component.touchStartMarkerId = null;
+          component.touchEndMarkerId = null;
           component.currentlyHoveredEl = null;
           component.visibleMarkers = new Set();
           component.markerRegistry = {};
+          component.clickableEntries = [];
+          component.touchRaycaster = new THREE.Raycaster();
+          component.canvasEl = null;
+          component._tmpWorld = new THREE.Vector3();
+          component._tmpScreen = new THREE.Vector2();
 
           const sceneEl = component.el;
 
@@ -569,6 +592,33 @@
             });
           };
 
+          const refreshClickableEntries = () => {
+            component.clickableEntries = [];
+            const clickableEls = sceneEl.querySelectorAll(".clickable");
+            clickableEls.forEach((clickableEl) => {
+              const markerId = clickableEl.getAttribute("data-marker-id");
+              const mesh = clickableEl.getObject3D("mesh");
+              if (markerId && mesh) {
+                component.clickableEntries.push({
+                  el: clickableEl,
+                  markerId,
+                  mesh,
+                });
+              } else if (markerId) {
+                const onceRefresh = () => {
+                  clickableEl.removeEventListener("object3dset", onceRefresh);
+                  clickableEl.removeEventListener("model-loaded", onceRefresh);
+                  refreshClickableEntries();
+                };
+                clickableEl.addEventListener("object3dset", onceRefresh);
+                clickableEl.addEventListener("model-loaded", onceRefresh);
+              }
+            });
+            component.debugLog("refreshClickableEntries", {
+              count: component.clickableEntries.length,
+            });
+          };
+
           const trackHoverTargets = () => {
             component.debugLog("trackHoverTargets start");
             const clickableEls = sceneEl.querySelectorAll(".clickable");
@@ -590,44 +640,156 @@
             });
           };
 
+          const findEntryByObject = (object) => {
+            return component.clickableEntries.find((entry) => {
+              let current = object;
+              while (current) {
+                if (current === entry.mesh) return true;
+                current = current.parent;
+              }
+              return false;
+            });
+          };
+
+          component.pickMarkerFromTouch = (touch) => {
+            if (!touch) return null;
+            if (!sceneEl.camera) return null;
+            if (!component.canvasEl) return null;
+            if (component.clickableEntries.length === 0) return null;
+
+            const rect = component.canvasEl.getBoundingClientRect();
+            const x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+            const y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+
+            component.touchRaycaster.setFromCamera({ x, y }, sceneEl.camera);
+
+            const visibleEntries = component.clickableEntries.filter(
+              (entry) => {
+                const markerEl = component.markerRegistry[entry.markerId];
+                return (
+                  markerEl &&
+                  markerEl.object3D &&
+                  markerEl.object3D.visible &&
+                  entry.mesh.visible
+                );
+              }
+            );
+
+            const visibleMeshes = visibleEntries
+              .filter((entry) => {
+                // ensure world matrices are up to date
+                entry.mesh.updateMatrixWorld(true);
+                return true;
+              })
+              .map((entry) => entry.mesh);
+
+            let markerId = null;
+            if (visibleMeshes.length > 0) {
+              const intersections = component.touchRaycaster.intersectObjects(
+                visibleMeshes,
+                true
+              );
+              if (intersections.length > 0) {
+                const hit = intersections[0];
+                const matchedEntry = findEntryByObject(hit.object);
+                markerId = matchedEntry ? matchedEntry.markerId : null;
+                component.debugLog("pickMarkerFromTouch", {
+                  markerId,
+                  point: hit.point,
+                });
+              }
+            }
+
+            if (markerId) return markerId;
+
+            if (visibleEntries.length === 0) return null;
+
+            // Fallback: choose closest projected center
+            let closestId = null;
+            let minDistSq = Infinity;
+            const targetScreenX = touch.clientX;
+            const targetScreenY = touch.clientY;
+            visibleEntries.forEach((entry) => {
+              component._tmpWorld.set(0, 0, 0);
+              entry.el.object3D.localToWorld(component._tmpWorld);
+              component._tmpWorld.project(sceneEl.camera);
+              component._tmpScreen.set(
+                (component._tmpWorld.x * 0.5 + 0.5) * rect.width + rect.left,
+                (-component._tmpWorld.y * 0.5 + 0.5) * rect.height + rect.top
+              );
+              const dx = component._tmpScreen.x - targetScreenX;
+              const dy = component._tmpScreen.y - targetScreenY;
+              const distSq = dx * dx + dy * dy;
+              if (distSq < minDistSq) {
+                minDistSq = distSq;
+                closestId = entry.markerId;
+              }
+            });
+
+            component.debugLog("pickMarkerFromTouch fallback", {
+              markerId: closestId,
+              distance: Math.sqrt(minDistSq),
+            });
+            return closestId;
+          };
+
           component.processSwipe = () => {
             const hoveredId = component.currentlyHoveredEl
               ? component.currentlyHoveredEl.getAttribute("data-marker-id")
               : null;
+            const candidates = [];
+            if (component.touchEndMarkerId)
+              candidates.push(component.touchEndMarkerId);
+            if (component.touchStartMarkerId)
+              candidates.push(component.touchStartMarkerId);
+            if (hoveredId) candidates.push(hoveredId);
+
             component.debugLog("processSwipe", {
               hoveredId,
+              touchStartMarkerId: component.touchStartMarkerId,
+              touchEndMarkerId: component.touchEndMarkerId,
               visibleMarkers: Array.from(component.visibleMarkers),
             });
-            if (component.currentlyHoveredEl) {
-              const markerId =
-                component.currentlyHoveredEl.getAttribute("data-marker-id");
-              if (markerId) {
-                const markerEl = component.markerRegistry[markerId];
-                if (markerEl && markerEl.object3D.visible) {
-                  console.log(
-                    "スワイプ成功(直接・検証済)！ 対象マーカー:",
-                    markerId
-                  );
-                  component.debugLog("direct swipe success", { markerId });
-                  showSwipeToast();
-                  markStamp(markerId);
-                  return;
-                }
+
+            const handledMarkers = new Set();
+            const tryHandleMarker = (markerId, mode) => {
+              if (!markerId || handledMarkers.has(markerId)) return false;
+              handledMarkers.add(markerId);
+              const markerEl = component.markerRegistry[markerId];
+              if (markerEl && markerEl.object3D.visible) {
+                console.log(
+                  mode === "direct"
+                    ? "スワイプ成功(直接・検証済)！ 対象マーカー:"
+                    : "スワイプ成功(間接・検証済)！ 対象マーカー:",
+                  markerId
+                );
+                component.debugLog(`${mode} swipe success`, { markerId });
+                const stamp = STAMP_MARKERS.find((s) => s.id === markerId);
+                showSwipeToast(stamp);
+                markStamp(markerId, stamp);
+                return true;
+              }
+              return false;
+            };
+
+            for (const markerId of candidates) {
+              if (tryHandleMarker(markerId, "direct")) {
+                return;
               }
             }
 
             if (component.visibleMarkers.size === 1) {
               const markerId = component.visibleMarkers.values().next().value;
-              if (markerId) {
-                const markerEl = component.markerRegistry[markerId];
-                if (markerEl && markerEl.object3D.visible) {
-                  console.log(
-                    "スワイプ成功(間接・検証済)！ 対象マーカー:",
-                    markerId
-                  );
-                  component.debugLog("fallback swipe success", { markerId });
-                  showSwipeToast();
-                  markStamp(markerId);
+              if (tryHandleMarker(markerId, "fallback")) {
+                return;
+              }
+            } else if (component.visibleMarkers.size > 1) {
+              // fallback: pick first visible marker that matches a clickable entry
+              for (const entry of component.clickableEntries) {
+                if (component.visibleMarkers.has(entry.markerId)) {
+                  if (tryHandleMarker(entry.markerId, "fallback")) {
+                    return;
+                  }
                 }
               }
             }
@@ -636,6 +798,8 @@
           component.resetTouch = () => {
             component.touchStartX = null;
             component.touchStartTime = null;
+            component.touchStartMarkerId = null;
+            component.touchEndMarkerId = null;
             component.debugLog("resetTouch");
           };
 
@@ -643,9 +807,13 @@
             if (!evt.touches || evt.touches.length === 0) return;
             component.touchStartX = evt.touches[0].clientX;
             component.touchStartTime = Date.now();
+            component.touchStartMarkerId = component.pickMarkerFromTouch(
+              evt.touches[0]
+            );
             component.debugLog("touchstart", {
               x: component.touchStartX,
               touches: evt.touches.length,
+              markerId: component.touchStartMarkerId,
             });
           };
 
@@ -661,6 +829,9 @@
             const duration = component.touchStartTime
               ? Date.now() - component.touchStartTime
               : null;
+            component.touchEndMarkerId = component.pickMarkerFromTouch(
+              evt.changedTouches[0]
+            );
             const dynamicThreshold = (() => {
               if (duration === null) return 40;
               if (duration < 180) return 18;
@@ -673,17 +844,19 @@
               deltaX,
               duration,
               threshold: dynamicThreshold,
+              markerId: component.touchEndMarkerId,
             });
-            component.resetTouch();
-
-            if (Math.abs(deltaX) > dynamicThreshold) {
+            const shouldProcess = Math.abs(deltaX) > dynamicThreshold;
+            if (shouldProcess) {
               component.processSwipe();
             }
+            component.resetTouch();
           };
 
           const attachCanvasListeners = (canvasEl) => {
             if (!canvasEl || component.canvasReady) return;
             component.canvasReady = true;
+            component.canvasEl = canvasEl;
             canvasEl.style.touchAction = "none";
             canvasEl.addEventListener("touchstart", component.handleTouchStart);
             canvasEl.addEventListener("touchend", component.handleTouchEnd);
@@ -715,6 +888,7 @@
           };
 
           registerMarkers();
+          refreshClickableEntries();
           trackHoverTargets();
 
           if (sceneEl.hasLoaded) {
