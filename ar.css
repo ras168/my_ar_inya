@@ -161,3 +161,27 @@
   height: 80px;
   margin-bottom: 12px;
 }
+
+#swipe-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgba(25, 118, 210, 0.92);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  box-shadow: 0 6px 18px rgba(25, 118, 210, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 12000;
+}
+
+#swipe-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
